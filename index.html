@@ -134,7 +134,7 @@
                 <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
                 <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
             </div>
-            © 2025 Mohammad Sheikh Shahinur Rahman<br>
+            © 2024 Mohammad Sheikh Shahinur Rahman<br>
             Software Engineer IT - Amadersomaj Inc.
         </div>
     </footer>
@@ -145,14 +145,14 @@
             const resultContainer = document.getElementById('resultContainer');
 
             if(!/^01\d{9}$/.test(phone)) {
-                showResult(<div class="alert alert-danger">Please enter a valid 11-digit phone number starting with 01</div>);
+                showResult(`<div class="alert alert-danger">Please enter a valid 11-digit phone number starting with 01</div>`);
                 return;
             }
 
             try {
                 showLoader();
                 // Using a different CORS proxy to bypass CORS issues
-                const apiUrl = https://api.allorigins.win/get?url=https://turecaller.pikaapis0.workers.dev/?number=+88${phone};
+                const apiUrl = `https://api.allorigins.win/get?url=https://turecaller.pikaapis0.workers.dev/?number=+88${phone}`;
                 
                 const response = await fetch(apiUrl);
                 
@@ -163,7 +163,7 @@
                 
                 displayResults(jsonData);
             } catch (error) {
-                showResult(<div class="alert alert-danger">Error: ${error.message}</div>);
+                showResult(`<div class="alert alert-danger">Error: ${error.message}</div>`);
             }
         }
 
