@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truecaller BD - Phone Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2A2F4F;
+            --secondary-color: #917FB3;
+            --accent-color: #E5BEEC;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-gradient {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .main-card {
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .main-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            margin-top: auto;
+            padding: 1.5rem 0;
+        }
+
+        .input-group-custom {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .phone-icon {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+        }
+
+        .data-point {
+            padding: 1rem;
+            background: rgba(233, 236, 239, 0.3);
+            border-radius: 10px;
+            margin: 0.5rem 0;
+            transition: all 0.3s;
+        }
+
+        .data-point:hover {
+            transform: translateX(10px);
+            background: rgba(145,127,179,0.1);
+        }
+
+        .json-data-point {
+            padding: 1rem;
+            background: rgba(233, 236, 239, 0.5);
+            border-radius: 10px;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark nav-gradient">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-mobile-alt me-2"></i>
+                Truecaller BD
+            </a>
+            <div class="navbar-text">
+                <small>Powered by PikaAPIs</small>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5 flex-grow-1">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="main-card p-4 mb-4">
+                    <h3 class="text-center mb-4"><i class="fas fa-search me-2"></i>Phone Number Lookup</h3>
+                    
+                    <div class="input-group input-group-custom mb-4">
+                        <span class="input-group-text phone-icon">
+                            <i class="fas fa-phone"></i>
+                        </span>
+                        <input type="tel" 
+                               class="form-control" 
+                               id="phoneInput" 
+                               placeholder="Enter Phone Number (01XXXXXXXXX)"
+                               maxlength="11">
+                        <button class="btn btn-primary" onclick="lookupNumber()">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                    </div>
+
+                    <div id="resultContainer" class="result-card p-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <div class="mb-2">
+                <a href="#" class="text-white me-3"><i class="fab fa-github"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+            </div>
+            © 2025 Mohammad Sheikh Shahinur Rahman<br>
+            Software Engineer IT - Amadersomaj Inc.
+        </div>
+    </footer>
+
+    <script>
+        async function lookupNumber() {
+            const phone = document.getElementById('phoneInput').value;
+            const resultContainer = document.getElementById('resultContainer');
+
+            if(!/^01\d{9}$/.test(phone)) {
+                showResult(<div class="alert alert-danger">Please enter a valid 11-digit phone number starting with 01</div>);
+                return;
+            }
+
+            try {
+                showLoader();
+                // Using a different CORS proxy to bypass CORS issues
+                const apiUrl = https://api.allorigins.win/get?url=https://turecaller.pikaapis0.workers.dev/?number=+88${phone};
+                
+                const response = await fetch(apiUrl);
+                
+                if(!response.ok) throw new Error('API Error');
+                
+                const data = await response.json();
+                const jsonData = JSON.parse(data.contents);  // Parsing the JSON data
+                
+                displayResults(jsonData);
+            } catch (error) {
+                showResult(<div class="alert alert-danger">Error: ${error.message}</div>);
+            }
+        }
+
+        function displayResults(data) {
+            const html = `
+                <h5 class="mb-4"><i class="fas fa-info-circle me-2"></i>Search Results</h5>
+                <div class="data-point">
+                    <small class="text-muted">Carrier</small>
+                    <div class="fw-bold">${data.carrier}</div>
+                </div>
+                
+                <div class="data-point">
+                    <small class="text-muted">Country</small>
+                    <div class="fw-bold">${data.country}</div>
+                </div>
+
+                <div class="data-point">
+                    <small class="text-muted">Location</small>
+                    <div class="fw-bold">${data.location}</div>
+                </div>
+
+                <div class="data-point">
+                    <small class="text-muted">Truecaller Status</small>
+                    <div class="fw-bold text-${data.Truecaller === "No name found" ? 'danger' : 'success'}">
+                        ${data.Truecaller === "No name found" ? data.Unknown : data.Truecaller}
+                    </div>
+                </div>
+
+                <div class="data-point">
+                    <small class="text-muted">Timestamp</small>
+                    <div class="fw-bold">${new Date(data.timestamp).toLocaleString()}</div>
+                </div>
+
+                <div class="data-point">
+                    <small class="text-muted">Timezones</small>
+                    <div class="fw-bold">${data.timezones.join(', ')}</div>
+                </div>
+
+                <div class="data-point">
+                    <small class="text-muted">Local Format</small>
+                    <div class="fw-bold">${data.local_format}</div>
+                </div>
+
+                <div class="data-point">
+                    <small class="text-muted">International Format</small>
+                    <div class="fw-bold">${data.international_format}</div>
+                </div>
+
+                <div class="data-point">
+                    <small class="text-muted">Developer</small>
+                    <div class="fw-bold">Mohammad Sheikh Shahinur Rahman</div>
+                </div>
+
+                <div class="json-data-point">
+                    <h6 class="fw-bold">Full Data:</h6>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+
+                <div class="mt-4 text-end text-muted small">
+                    API Response Time: ${new Date(data.timestamp).toLocaleTimeString()}
+                </div>
+            `;
+
+            showResult(html);
+            animateResult();
+        }
+
+        function showLoader() {
+            const result = document.getElementById('resultContainer');
+            result.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2 text-muted">Scanning databases...</p>
+                </div>
+            `;
+            result.style.opacity = '1';
+        }
+
+        function showResult(content) {
+            const result = document.getElementById('resultContainer');
+            result.innerHTML = content;
+        }
+
+        function animateResult() {
+            const result = document.getElementById('resultContainer');
+            result.style.opacity = '1';
+            result.style.transform = 'translateY(0)';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
